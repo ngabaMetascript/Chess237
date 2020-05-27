@@ -11,8 +11,28 @@
     <link rel="stylesheet" type="text/css" href="{% static 'chess/vendor/font-awesome/css/font-awesome.min.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'chess/css/alertify.min.css' %}">
     <script src="{% static 'chess/js/prefixfree.min.js' %}"></script>
-    <script src="https://kit.fontawesome.com/15739e6b38.js" crossorigin="anonymous"></script>
-		<style>
+    <script src="https://kit.fontawesome.com/15739e6b38.js" crossorigin="anonymous"></script>		
+<style>
+#app[data-menu="about"] #overlay {
+  z-index: 299;
+  opacity: 1;
+}
+
+#profile {
+	display:none;
+}
+
+#app[data-menu="about"] #profile{
+	width:100vw;
+	height:100vh;
+	position:absolute;
+	display:block;
+	top:0px;
+	margin:0px;
+	left:0px;
+  z-index: 600;
+  background:#eee;
+}
 			#navbar a:hover {
 				font-weight:bold;
 			}
@@ -47,6 +67,15 @@ border:none; border-radius:3%; background:#fff;color:#333; box-shadow: 0px 0px 6
 			}
 	p{font-family:12px;margin-bottom:10px;overflow-wrap: break-word;word-wrap:break-word;hyphens: auto;}
 .gamestarted{display:none;}
+.saloon{
+padding:10px;background:#333;color:#fff;font-size:20px;text-transform:uppercase;
+cursor:pointer;
+}
+.saloon:hover{
+background:#fff;
+color:#777;
+}
+a{text-decoration:none;}
 	@media (max-width: 992px){
 		.gamestarted{
 			opacity:0;
@@ -123,16 +152,66 @@ border:none; border-radius:3%; background:#fff;color:#333; box-shadow: 0px 0px 6
         <div class="symbol"><div></div><div></div><div></div><div></div><div></div><div></div></div>
       </div>
 	  <!-- Logo preloader -->
-      <div id="overlay"></div>
+      <div id="overlay">
+				<div id='profile'>
+					<div style='width:100%;height:100%;display:flex;'>
+						<div style='box-shadow:1px 0px 3px #777;background:#fff;width:25%;max-width:450px;min-width:300px;padding:30px 10px 10px 10px;'>
+							<div style='display:flex;justify-content:space-around;'>
+								<img style='border-radius:100%;width:100px;height:100px;box-shadow:0px 0px 6px #777;' src="{% static 'chess/img/log.jpeg' %}">
+								<div>
+									<h4 style='text-align:center;text-transform:uppercase;font-size:20px;color:#000;'> {{user.username }} </h4>
+									<h4>
+										<span style='padding:10px;font-size:15px;background:#777;'> ELO : </span>
+										<span style='font-size:15px;color:#000;'> &nbsp;1000 Points </span>
+									</h4>
+									<h6 style='font-weight:bold;text-align:center;color:#000;margin-top:20px;font-size:15px;'> Modifier mes Infos </h6>
+								</div>								
+							</div>
+							<div style='margin-bottom:50px;text-align:center;'>
+								<a href='#' style='font-size:15px;color:#ee1040;' onclick='disconnect()'> Me déconnecter </a>
+							</div>
+							<div>
+								<div style='text-align:center;'>
+								<span href='#' style='padding:10px;font-size:15px;background:#777;color:#fff;'> Jeune Viking </span>
+								<span href='#' style='padding:10px;font-size:15px;color:#777;'> Guerrier Redoutable </span>
+								</div>
+							</div>
+							<!-- =============== -->
+							<div>
+								<div style='text-align:center;'>
+									<a href='#' style='padding:10px;font-size:15px;color:#777;'> 0 Actualités </a>
+								</div>
+							</div>
+							<!-- =============== -->
+							<div>
+								<div style='text-align:center;'>
+									<a href='#' style='padding:10px;font-size:15px;color:#000;'> 0 Messages </a>
+								</div>
+							</div>
+							<!-- =============== -->
+							<div>
+								<div style='text-align:center;'>
+									<a href='#' style='padding:10px;font-size:15px;color:#000;'> 0 Duels </a>
+								</div>
+							</div>
+							<!-- =============== -->
+							<div style='text-align:center;'>
+								<a href='#' onclick="changeAppMenu('menu','main')" style='padding:10px;font-size:15px;background-color:#333;color:#fff;'> Revenir au Salon </a>
+							</div>
+							<!-- =============== -->
+						</div>
+					</div>
+				</div>
+			</div>
 
 		<!-- Opponent Div -->
 		<center><div style='font-size:11px;margin-top:10px;color:#bbb;'><small id='partie'></small></div></center>
-		<nav id='navbar' style='width:100%;height:80px;display:flex;justify-content:center;'>
+		<nav style='width:100%;height:80px;display:flex;justify-content:center;'>
 				<div>
 					<span style='padding:10px;background:#bbb;font-size:20px;text-transform:uppercase;'>Votre Salon </span>
 				</div>
 				<div>
-					<span href='#' style='padding:10px;background:#333;color:#fff;font-size:20px;text-transform:uppercase;'>&nbsp;{{user.username}}</span>
+					<span href='#' class='saloon'>&nbsp;{{user.username}}</span>
 				</div>
 		</nav>
 		<div class='opponentDiv littleShow' style='display:none;'>
@@ -179,21 +258,10 @@ border:none; border-radius:3%; background:#fff;color:#333; box-shadow: 0px 0px 6
 		  <!-- Themes -->
           <section id="main" class="pane">
             <h1>CHESS 237</h1>
-            <button type="button" class="btn white menu-nav" data-menu="themes">Themes
+            <button type="button" class="btn white menu-nav" data-menu="themes">Options
             <button type="button" id="continue" class="btn">Jouer
-            <button type="button" class="btn white menu-nav" data-menu="about">A Propos
+            <button type="button" class="btn white menu-nav" data-menu="about">Profil
           </section>
-		  <!-- About Section -->
-          <section id="about" class="pane">
-            <h1>A Propos de Chess 237</h1>
-			<p> Nous sommes une start-up de Prestation de services Web </p>
-            <p>Suivez nous sur <a href="https://github.com/Z0ria" target="_blanc">Github<a></p>
-            <h2>Libraries</h2>
-            <p>Luminosité/Effets 3D <a href="http://photon.attasi.com" target="_blank">Photon</a><br>
-              Mouvements : <a href="https://github.com/jhlywa/chess.js" target="_blank">Chess.js</a></p>
-            <button type="button" class="btn menu-nav" data-menu="main">Retour</button>
-          </section>
-		  <!-- About Section -->
         </div>
       <div id="top-bar">
         <button type="button" class="btn icon" data-state="inactive" id="undo"></button>
@@ -449,9 +517,20 @@ border:none; border-radius:3%; background:#fff;color:#333; box-shadow: 0px 0px 6
 			{% include 'chess/alertify.min.js' %}
 		</script>
 	<script>
-		function trimfield(str) 
-		{ 
-			return str.replace(/^\s+|\s+$/g,''); 
+		function changeAppMenu(arg_menu,arg_value){
+			var menu = "data-"+arg_menu;
+			$("#app").attr(menu,arg_value);
+		}
+		function disconnect()
+		{
+			alertify.confirm("Deconnexion","Voulez-vous fermer votre session ?",
+				function(){
+					alertify.success('Decconexion en cours');
+					
+				},
+				function(){
+					alertify.error('Deconnexion Annulée');
+				});
 		}
 		function showTomodachis()
 		{
