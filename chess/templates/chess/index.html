@@ -1,17 +1,40 @@
 {% load static %}
 <!doctype html>
 <html lang="fr">
-  <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=Edge;" >
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chess 237</title>
+    <meta name='keywords' content='site Web,237,Echecs,Chess,Chess237,Chess,Stratege,Ngaba Franck,No Time to Sleep,N.T.S,Cameroun'>
+    <meta name="description" content="L'Arene des Joueurs d'Echec du Cameroun">
+    <meta name="url" content="http://chess.nts.yaknema.com">
+    <meta name="identifier-URL" content="http://chess.nts.yaknema.com">
+    <meta name="author" content="Ngaba Franck">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <meta name="robots" content="all">
+    <meta content="Chess237" property="og:site_name">
+    <meta content="website" property="og:type">
+    <meta content="L'Arene des Joueurs d'Echec du Cameroun" property="og:description">
+    <meta content="http://chess.nts.yaknema.com" property="og:url">
+    <meta content="Chess237" property="og:title">
+    <meta content="{% static '/chess/img/chess.jpg %}" property="og:image">
+    <meta content="Chess237" name="twitter:title">
+    <meta content="L'Arene des Joueurs d'Echec du Cameroun" name="twitter:description">
+    <meta content="{% static '/chess/img/chess.jpg %}" name="twitter:image">
+    <meta content="L'Arene des Joueurs d'Echec du Cameroun" name="twitter:card">
+	
+    <link href="/static/home/img/NgabaIco.ico" rel="icon">	
+    <link rel="apple-touch-icon" href="{% static 'chess/img/apple-touch-icon.png' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'chess/css/styles.css' %}"> 
     <link rel="stylesheet" type="text/css" href="{% static 'chess/vendor/font-awesome/css/font-awesome.min.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'chess/css/alertify.min.css' %}">
     <script src="{% static 'chess/js/prefixfree.min.js' %}"></script>
     <script src="https://kit.fontawesome.com/15739e6b38.js" crossorigin="anonymous"></script>
-		<style>
+    <style>
+	#navbar a:hover {
+	     font-weight:bold;
+	}
+	input{cursor:pointer;}
 	.gamemod{
 		min-width:300px;
 		width: 30%;
