@@ -12,8 +12,6 @@ body {
   font-weight: 400;
 }
 
-
-
 button { 
   font-family: Candara,Ubuntu,Calibri,sans-serif;
   font-weight: 400;
@@ -295,16 +293,18 @@ tbody span { line-height: 4.5em; padding-right: 0.3em; }
   transform-origin: 0 0;
 }
 
-.valid:before,
-.valid:after,
-.current:before,
-.current:after,
-.castle:before,
-.castle:after,
-.valid.highlight:before,
-.valid.highlight:after,
-.current.highlight:before,
-.current.highlight:after {
+/*
+
+#app[data-moves='on'] .valid:before,
+#app[data-moves='on'] .valid:after,
+#app[data-moves='on'] .current:before,
+#app[data-moves='on'] .current:after,
+#app[data-moves='on'] .castle:before,
+#app[data-moves='on'] .castle:after,
+#app[data-moves='on'] .valid.highlight:before,
+#app[data-moves='on'] .valid.highlight:after,
+#app[data-moves='on'] .current.highlight:before,
+#app[data-moves='on'] .current.highlight:after {
   content: '';
   z-index: 1;
   position: absolute;
@@ -368,8 +368,7 @@ tbody span { line-height: 4.5em; padding-right: 0.3em; }
 
 .valid[class*="O-O"]:before { background: #CC0; }
 .valid[class*="O-O"]:after { border: .1em solid #CC0; }
-
-/* ---------------------------------------------------------------------------------------------------- pawn / king head */
+*/
 
 .pawn .poly-group {
   width: 4em;
@@ -1067,7 +1066,6 @@ input[type=checkbox]:hover + label:after {
 
 #app[data-menu="about"] #overlay {
   z-index: 99;
-  opacity: .75;
 }
 
 #app[data-state="game"] #overlay {
@@ -1148,8 +1146,6 @@ tfoot th:last-child   { background-position: right bottom; background-size: 332%
                            .square:nth-child(odd)   { background-image: url(../img/classic-square-white.png); }
 #app[data-theme="classic"] .white i{color:#333;}
 #app[data-theme="classic"] .black i{color:#CF9269;}
-#app[data-theme="classic"] #recent-title{background:gray;color:#fff;}
-#app[data-theme="classic"] #recents{background:#eee;}
 /* ---------------------------------------------------------------------------------------------------- marble */
 
 #app[data-theme="marble"] th                                          { background-color: #303030; }
@@ -1205,9 +1201,6 @@ tfoot th:last-child   { background-position: right bottom; background-size: 332%
 #app[data-theme="marble"] tbody tr:nth-child(even)
                         .square:nth-child(odd)      { background-image: url(../img/marble-square-white.png); }
 #app[data-theme="marble"] .white i{color:#333;}
-#app[data-theme="marble"] #recent-title{background:rgb(255,255,255);color:#777;}
-#app[data-theme="marble"] #recents{background:#000;}
-#app[data-theme="marble"] #messTO{background:#000;color:#fff;}
 /* ---------------------------------------------------------------------------------------------------- flat */
 
 #app[data-theme="flat"]                             { background-color: #E5E3DF; color: #303132; }
@@ -1281,7 +1274,6 @@ tfoot th:last-child   { background-position: right bottom; background-size: 332%
 #app[data-theme="wireframe"] .black.bishop .rectangle.b.prim .tp:after   { border-top: 1.1em solid rgba(255,221,29,.4); bottom: -1em; right: -.18em;}
 #app[data-theme="wireframe"] .white i{color:#35C2D3;}
 #app[data-theme="wireframe"] .black i{color:#FFDD1D;}
-#app[data-theme="wireframe"] #messTO{background:#000;color:#fff;}
 /* ------------------------------------------------------- Responsive board */
 
 @media screen and (min-width: 48em), screen and (min-height: 48em) { 

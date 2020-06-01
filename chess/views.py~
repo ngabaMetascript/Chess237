@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect,HttpResponse
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse
 from .models import *
 import time
@@ -8,6 +8,10 @@ def index(request):
 	template='chess/index.html'
 	context = {}
 	return render(request,template,context)
+
+def disc(request):
+	logout(request)
+	return redirect("/")
 
 def check(request):
 	pseudo = request.GET.get('player',None)
@@ -37,7 +41,7 @@ def new(request):
 		room = Room(m_player1 = PLAYER)
 		room.save()
 		ID = room.id
-		for i in range(15):
+		for i in range(6):
 			time.sleep(2)
 			room = Room.objects.get(id=ID)
 			if room.is_available == 2:
@@ -68,6 +72,8 @@ def new(request):
 		data['wins'] = otherP.m_wins
 		data['loses'] = otherP.m_loses
 		data['draws'] = otherP.m_draws
+		data['logo'] = other.m_logo.url
+		data['elo'] = otherP.elo()
 	return JsonResponse(data)
 
 def save_move(request,room,move,turn):

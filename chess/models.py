@@ -9,6 +9,8 @@ class Player(models.Model):
 	m_draws = models.IntegerField(default=0,blank = True, null = True)
 	m_logo = models.FileField(blank = True, null = True)
 	m_friends = models.ManyToManyField('self',blank=True, related_name='friends')
+	def elo(self):
+		return self.m_draws*1 + self.m_wins*5
 	def __str__(self):
 		return str(self.m_user)
 	def in_room(self):

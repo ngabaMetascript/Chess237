@@ -6,19 +6,54 @@
     <meta http-equiv="X-UA-Compatible" content="IE=Edge;" >
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chess 237</title>
-    <link rel="apple-touch-icon" href="{% static 'chess/img/apple-touch-icon.png' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'chess/css/styles.css' %}"> 
     <link rel="stylesheet" type="text/css" href="{% static 'chess/vendor/font-awesome/css/font-awesome.min.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'chess/css/alertify.min.css' %}">
     <script src="{% static 'chess/js/prefixfree.min.js' %}"></script>
     <script src="https://kit.fontawesome.com/15739e6b38.js" crossorigin="anonymous"></script>
 		<style>
-			#navbar2 a{
-				transition: ease all 1s;
+	.gamemod{
+		min-width:300px;
+		width: 30%;
+		height: 45vh;
+		margin-bottom: 20px;
+		background: rgba(0,0,0,0.7);
+	}
+	.weighover:hover {
+		font-weight:bold;
+		cursor:pointer;
+	}
+#app[data-menu="about"] #overlay {
+  z-index: 299;
+  opacity: 1;
+}
+
+			#mininav a:hover {
+				font-weight:bold;
 			}
-			#navbar2 a:hover {
-				font-size:20px;
+			#mininav a{
+			margin-right:10px;			
 			}
+
+#profile {
+	display:none;
+}
+
+#app[data-menu="about"] #profile{
+	width:100vw;
+	height:100vh;
+	position:absolute;
+	display:block;
+	top:0px;
+	margin:0px;
+	left:0px;
+  z-index: 600;
+  background:#eee;
+}
+#friendsMenu a[data-menu="off"]{
+	display:none;
+}
+
 			input{cursor:pointer;}
 			.gamemod{
 				min-width:300px;
@@ -26,6 +61,19 @@
 				height: 45vh;
 				margin-bottom: 20px;
 				background: rgba(0,0,0,0.7);
+			}
+			.gamemod p{
+				display:block;
+			}
+			.gamemod *{
+				color:#fff;
+			}
+			.gamemod:hover{
+				cursor:pointer;
+				box-shadow:0px 0px 6px #777;
+			}
+.gamemod:hover .modtitle{
+				text-shadow:0px 0px 6px #fff;
 			}
 			.friendsMenu a{
 				font-size:12px;
@@ -50,12 +98,21 @@ border:none; border-radius:3%; background:#fff;color:#333; box-shadow: 0px 0px 6
 			}
 	p{font-family:12px;margin-bottom:10px;overflow-wrap: break-word;word-wrap:break-word;hyphens: auto;}
 .gamestarted{display:none;}
+.saloon{
+padding:10px;background:#333;color:#fff;font-size:20px;text-transform:uppercase;
+cursor:pointer;
+}
+.saloon:hover{
+background:#fff;
+color:#777;
+}
+a{text-decoration:none;}
 	@media (max-width: 992px){
 		.gamestarted{
 			opacity:0;
 		}
 		#log{
-			display:none;
+			font-size:12px;
 		}
 	}
 	@media (min-width: 993px){
@@ -72,12 +129,13 @@ border:none; border-radius:3%; background:#fff;color:#333; box-shadow: 0px 0px 6
 			</div>
 			<div style='display:flex;flex-wrap:wrap;align-items:center;justify-content:center;'>
 				<a class='aSN2' href='#' id='againsearch' onclick='hideOver3()'>Continuer</a><a class='aSN2' href='#' onclick='trylookPlayer3()'>Nouvelle Partie</a>
+<a class='aSN2' href='#'>Mode de Jeu</a>
 			</div>
 		</div>
 
 		<div id="overlay2" style="display:none;position:fixed;z-index:1000;background:#222;width:100%;height:100%;">
 			<div id='waitmessage' style='margin-top:20%;text-align:center;color:#fff;'> 
-				<span><i style='color:#fff;' class='fa fa-user' id='searchM'></i>  &nbsp;Recherche d'adversaire en cours ...</span>
+				<span id='spasearchM'><i style='color:#fff;' class='fa fa-user'></i>  &nbsp;Recherche d'adversaire en cours ...</span>
 				<div class='aka' id='found' style='display:none;margin-top:15px;text-align:center;color:#fff;font-size:55px;'>
 					ADVERSAIRE TROUVE !!!
 				</div>
@@ -90,31 +148,98 @@ border:none; border-radius:3%; background:#fff;color:#333; box-shadow: 0px 0px 6
 			</div>
 		</div><!-- -->
 	 {% if user.is_authenticated %}
+		<!-- Amis -->
 	  <div id='tomodachis' style='background:rgba(20,20,20,0.7);display:none;padding-top:1%;width:100vw;height:100vh;z-index:999;position:absolute;'>
 		<div style='padding-top:20px;width:35%;height:50%;min-width:390px;min-height:400px;margin:0 auto;background:#fff;'>
 			<div style='display:flex;justify-content:space-around;'>
 				<h1 style='padding-bottom:10px;text-align:center;color:#777;font-size:30px;color:#00eeb0;'> Liste des Amis </h1>
 				<a style='text-decoration:none;color:#000;' onclick='closeTomodachis()' href='#'><i class='fas fa-close'></i>&nbsp;Fermer</small></a>
 			</div>
+			{% if user.player.m_friends.count == 0 %}
+			<div>
+				<span href="#" style="color:##777;text-align:center;font-size:14px;"> Aucun Ami </<span>
+			</div>
+			{% else %}
+			{% for a in user.player.m_friends.filter %}
 			<div style='margin-bottom:20px;'>
 				<div style='display:flex;padding-left:20px;'>
-					<div style='width:30%;max-width:80px;min-height:80px;border-radius:100%;background:#00eeb0;'></div>
+					<div style="width:30%;max-width:80px;min-height:80px;border-radius:100%;background-position:center;background-size:cover;background-image:url({{a.m_logo.url}})"></div>
 					<div style='min-width:220px;width:60%;margin-left:20px;margin-right:50px;'>
 						<div style='width:100%;display:flex;justify-content:space-between;'>
-							<h6 style='color:#000;font-size:18px;'> Ngaba </h6>
-							<h6 style='color:#000;font-size:18px;color:#777;'> Elo:1000 </h6>
+							<h6 style='color:#000;font-size:18px;text-transform:capitalize;'> {{a}} </h6>
+							<h6 style='color:#000;font-size:18px;color:#777;'> Elo:{{a.elo}} </h6>
 						</div>
-						<div style='margin-top:5px;color:#00eeb0;font-size:12px;'>Connecté ( Partie en Cours )</div>
+						<div style='margin-top:5px;color:#00eeb0;font-size:12px;'><!-- Connecté ( Partie en Cours ) -->{{a.status}}</div>
 						<div class='friendsMenu' style='margin-top:5px;width:100%;display:flex;justify-content:space-between;'>
-							<a href='#' style='color:#777;'><i class="fas fa-fist-raised"></i>&nbsp; Fight ! </a>
+							<a id='fighto' href='#' style='color:#777;' onclick="fightFriend('{{a}}',{{a.id}})"><i class="fas fa-fist-raised"></i>&nbsp; Fight ! </a>
 							<a href='#' style='color:#777;'><i class="fas fa-tasks"></i>&nbsp; Stats </a>
 							<a href='#' style='color:#777;'><i class="fas fa-sms"></i>&nbsp; Message </a>
 						</div>
 					</div>
 				</div>
-			</div>		
+			</div>
+			{% endfor %}
+			{% endif %}		
 		</div>
 	  </div>
+		<!-- ============ -->
+		<!-- Modes de Jeu -->
+	  <div id='gamemodsDiv' style='display:none;overflow-y:auto;padding-top:1%;width:100vw;height:100vh;background:rgba(20,20,20,1);z-index:999;position:absolute;'>
+		<h1 style="text-transform:capitalize;font-family:'Ink Free';font-size:30px;font-weight:normal;color:#fff;text-align:center;"> Choisissez un mode de Jeu </h1>
+		<div style='margin-bottom:15px;text-align:center;font-size:18px;' onclick="hideDiv('gamemodsDiv',0)"><span class='weighover' style='color:#fff;'>Revenir au salon</span></div>
+		<div style='display:flex;flex-wrap:wrap;justify-content:space-around;'>
+			<div id="gamemod1" class='gamemod' style="background-image:url({% static 'chess/img/quick2.jpg' %});background-position:center;background-size:cover;">
+				<div style='display:flex;justify-content:center;flex-direction:column;width:100%;height:100%;background-color:rgba(20,20,20,0.4);'>
+					<div class='modtitle' style='font-size:40px;text-align:center;'> Partie Rapide </div>
+					<p style='font-size:16px;text-align:center;'>
+						Affronter quelqu'un au hasard.<br>
+						Vous pouvez tomber sur un véritable maitre ou un gros noob.
+					</p>
+				</div>
+			</div>
+			<div class='gamemod' style="background-image:url({% static 'chess/img/trophy.jpg' %});background-position:center;background-size:cover;">
+				<div style='display:flex;justify-content:center;flex-direction:column;width:100%;height:100%;background-color:rgba(20,20,20,0.4);'>
+					<div class='modtitle' style='font-size:40px;text-align:center;'> Tournoi </div>
+					<p style='font-size:16px;text-align:center;'>
+						Participez à un tournoi et tentez de gagner un prix.
+					</p>
+				</div>		  
+			</div>
+			<div class='gamemod' style="background-image:url({% static 'chess/img/vikings.jpg' %});background-position:center;background-size:cover;">
+				<div style='display:flex;justify-content:center;flex-direction:column;width:100%;height:100%;background-color:rgba(20,20,20,0.4);'>
+					<div class='modtitle' style='font-size:40px;text-align:center;'> La Taverne des Vikings </div>
+					<p style='font-size:16px;text-align:center;'>
+						Affrontez des joueurs dont l'ELO varie entre 0 et 200.
+					</p>
+				</div>		  
+			</div>
+			<div class='gamemod' style="background-image:url({% static 'chess/img/IA.png' %});background-position:center;background-size:cover;">
+				<div style='display:flex;justify-content:center;flex-direction:column;width:100%;height:100%;background-color:rgba(20,20,20,0.4);'>
+					<div class='modtitle' style='font-size:40px;text-align:center;'> Affronter l'IA </div>
+					<p style='font-size:16px;text-align:center;'>
+						Progressez en confrontant notre Intelligence Artificielle.
+					</p>					
+				</div>		  
+			</div>			
+			<div class='gamemod' style="background-image:url({% static 'chess/img/watcher.png' %});background-position:center;background-size:cover;">
+				<div style='display:flex;justify-content:center;flex-direction:column;width:100%;height:100%;background-color:rgba(20,20,20,0.4);'>
+					<div class='modtitle' style='font-size:40px;text-align:center;'> Watcher </div>
+					<p style='font-size:16px;text-align:center;'>
+						Observer une partie en cours pour analyser les tactiques et stratégies utilisés.
+					</p>					
+				</div>		  
+			</div>
+			<div class='gamemod' style="background-image:url({% static 'chess/img/puzzle.jpg' %});background-position:center;background-size:cover;">
+				<div style='display:flex;justify-content:center;flex-direction:column;width:100%;height:100%;background-color:rgba(20,20,20,0.4);'>
+					<div class='modtitle' style='font-size:40px;text-align:center;'> Puzzle & Enigmes </div>
+					<p style='font-size:16px;text-align:center;'>
+						Testez votre sens stratégique face aux défis qu'on vous a concotcté.
+					</p>					
+				</div>		  
+			</div>			
+		</div>
+	  </div>
+		<!-- ============ -->
 
     <div id="app" class="loading" data-theme="classic" data-frame="on" data-menu="main">
 	  <!-- Logo preloader -->
@@ -126,7 +251,58 @@ border:none; border-radius:3%; background:#fff;color:#333; box-shadow: 0px 0px 6
         <div class="symbol"><div></div><div></div><div></div><div></div><div></div><div></div></div>
       </div>
 	  <!-- Logo preloader -->
-      <div id="overlay"></div>
+      <div id="overlay">
+				<div id='profile'>
+					<div style='width:100%;height:100%;display:flex;'>
+						<div style='box-shadow:1px 0px 3px #777;background:#fff;width:25%;max-width:450px;min-width:300px;padding:30px 10px 10px 10px;'>
+							<div style='display:flex;justify-content:space-around;'>
+								<img style='border-radius:100%;width:100px;height:100px;box-shadow:0px 0px 6px #777;' src="{{user.player.m_logo.url}}">
+								<div>
+									<h4 style='text-align:center;text-transform:uppercase;font-size:20px;color:#000;'> {{user.username }} </h4>
+									<h4>
+										<span style='padding:10px;font-size:15px;background:#777;'> ELO : </span>
+										<span style='font-size:15px;color:#000;'> &nbsp;{{user.player.elo}} Points </span>
+									</h4>
+									<h6 style='font-weight:bold;text-align:center;color:#000;margin-top:20px;font-size:15px;'> Modifier mes Infos </h6>
+								</div>								
+							</div>
+							<div style='margin-bottom:50px;text-align:center;'>
+								<a href='#' style='font-size:15px;color:#ee1040;' onclick='disconnect()'> Me déconnecter </a>
+								<a href='/disc/' id='disco'></a>
+							</div>
+							<div>
+								<div style='text-align:center;'>
+								<span href='#' style='padding:10px;font-size:15px;background:#777;color:#fff;'> Jeune Viking </span>
+								<span href='#' style='padding:10px;font-size:15px;color:#777;'> Guerrier Redoutable </span>
+								</div>
+							</div>
+							<!-- =============== -->
+							<div>
+								<div style='text-align:center;'>
+									<a href='#' style='padding:10px;font-size:15px;color:#777;'> 0 Actualités </a>
+								</div>
+							</div>
+							<!-- =============== -->
+							<div>
+								<div style='text-align:center;'>
+									<a href='#' style='padding:10px;font-size:15px;color:#000;'> 0 Messages </a>
+								</div>
+							</div>
+							<!-- =============== -->
+							<div>
+								<div style='text-align:center;'>
+									<a href='#' style='padding:10px;font-size:15px;color:#000;'> 0 Duels </a>
+								</div>
+							</div>
+							<!-- =============== -->
+							<div style='text-align:center;'>
+								<a href='#' onclick="changeAppMenu('menu','main')" style='padding:10px;font-size:15px;background-color:#333;color:#fff;'> Revenir au Salon </a>
+							</div>
+							<!-- =============== -->
+						</div>
+					</div>
+				</div>
+			</div>
 
 		<!-- Opponent Div -->
 		<center><div style='font-size:11px;margin-top:10px;color:#bbb;'><small id='partie'></small></div></center>
@@ -135,20 +311,20 @@ border:none; border-radius:3%; background:#fff;color:#333; box-shadow: 0px 0px 6
 					<span style='padding:10px;background:#bbb;font-size:20px;text-transform:uppercase;'>Votre Salon </span>
 				</div>
 				<div>
-					<span href='#' style='padding:10px;background:#333;color:#fff;font-size:20px;text-transform:uppercase;'>&nbsp;{{user.username}}</span>
+					<span href='#' class='saloon'>&nbsp;{{user.username}}</span>
 				</div>
 		</nav>
 		<div class='opponentDiv littleShow' style='display:none;'>
-			<center style=''><span style='padding:10px;background:#bbb;font-size:14px;text-transform:uppercase;'>Adversaire</span><i style='padding:10px;background:#333;font-size:14px;text-transform:uppercase;' class='opponent_name'>&nbsp;</i></center>
+			<center ><span style='padding:10px;background:#bbb;font-size:14px;text-transform:uppercase;'>Adversaire</span><i style='padding:10px;background:#333;font-size:14px;text-transform:uppercase;' class='opponent_name'>&nbsp;</i></center>
 		</div>
 		<div class='opponentDiv gamestarted' style='z-index:100;position:absolute;top:30px;right:10px;width:300px;height:200px;'>
 			<center><h1 style='width:60%;font-size:16px;padding-top:12px;height:40px;text-align:center;margin:0px;background:#000;color:#fff;'>Adversaire</h1></center>
 			<div style='width:100%;height:160px;'>
-<center><div style="margin-top:10px;padding-top:25px;padding-left:40px;width:100px;height:100px;border-radius:80%;background-image:url({% static 'chess/img/log.jpeg' %});background-size:100% 100%;">
+<center><div id='opp_logo' style="margin-top:10px;padding-top:25px;padding-left:40px;width:100px;height:100px;border-radius:80%;background-size:100% 100%;margin-bottom:10px;">
 				
 				</div>
 				<h1 style='font-size:16px;color:#777;' class='opponent_name'>  </h1>
-				<div style='font-size:12px;color:#777;'> ELO:&nbsp;&nbsp;1000 </div>
+				<div style='font-size:12px;color:#777;' id='opp_elo'></div>
 				<button class="btn" id='colorSide'></button>
 				<div><a href='#' style='margin:0px;font-size:12px;text-decoration:none;'><i class='fa fa-plus'></i>&nbsp;Ajouter comme ami</a></div>
 				<div>
@@ -165,7 +341,7 @@ border:none; border-radius:3%; background:#fff;color:#333; box-shadow: 0px 0px 6
 
       <div id="menu" class="main">
 		<div id='quote' style="font-family:'Ink Free',eufm10;">Juste pour les Stratèges.</div>
-		<nav id='navbar2'> <a href='#'><i class="fas fa-house-user"></i>&nbsp;Accueil</a><a href='#'><i class="fas fa-book"></i>&nbsp;Regles</a><a href='#'><i class="fas fa-tasks"></i>&nbsp;Scores</a><a onclick='showTomodachis()' href='#'><i class='fas fa-group'>&nbsp;Amis</i></a> </nav>
+		<nav id='mininav'> <a href='#'><i class="fas fa-house-user"></i>&nbsp;Accueil</a><a href='#'><i class="fas fa-book"></i>&nbsp;Regles</a><a href='#'><i class="fas fa-tasks"></i>&nbsp;Scores</a><a onclick='showTomodachis()' href='#'><i class='fas fa-group'>&nbsp;Amis</i></a> </nav>
         <img id ="logoimg" src="{% static 'chess/img/logo.png' %}" alt="hartwig chess set" />
 		<!-- Panneaux de Selection -->
         <section id="panes">
@@ -182,21 +358,10 @@ border:none; border-radius:3%; background:#fff;color:#333; box-shadow: 0px 0px 6
 		  <!-- Themes -->
           <section id="main" class="pane">
             <h1>CHESS 237</h1>
-            <button type="button" class="btn white menu-nav" data-menu="themes">Themes
+            <button type="button" class="btn white menu-nav" data-menu="themes">Options
             <button type="button" id="continue" class="btn">Jouer
-            <button type="button" class="btn white menu-nav" data-menu="about">A Propos
+            <button type="button" class="btn white menu-nav" data-menu="about">Profil
           </section>
-		  <!-- About Section -->
-          <section id="about" class="pane">
-            <h1>A Propos de Chess 237</h1>
-			<p> Nous sommes une start-up de Prestation de services Web </p>
-            <p>Suivez nous sur <a href="https://github.com/Z0ria" target="_blanc">Github<a></p>
-            <h2>Libraries</h2>
-            <p>Luminosité/Effets 3D <a href="http://photon.attasi.com" target="_blank">Photon</a><br>
-              Mouvements : <a href="https://github.com/jhlywa/chess.js" target="_blank">Chess.js</a></p>
-            <button type="button" class="btn menu-nav" data-menu="main">Retour</button>
-          </section>
-		  <!-- About Section -->
         </div>
       <div id="top-bar">
         <button type="button" class="btn icon" data-state="inactive" id="undo"></button>
@@ -444,14 +609,53 @@ border:none; border-radius:3%; background:#fff;color:#333; box-shadow: 0px 0px 6
 		</div>
 		<!-- Recent -->
 
-    <!-- <script src="{% static 'chess/js/scripts.js' %}"></script> -->
+    <script src="{% static 'chess/js/alertify.min.js' %}"></script>
+    <script src="{% static 'chess/js/scripts.js' %}"></script>
+    <script src="{% static 'chess/js/jquery.min.js' %}"></script>
 		<script>
-			{% include 'chess/scripts.js' %}
-		</script>
-		<script>
-			{% include 'chess/alertify.min.js' %}
+			function newGame()
+			{
+				chess.reset();
+				document.getElementById('b-jail').innerHTML = "";
+				document.getElementById('w-jail').innerHTML = "";
+			}
 		</script>
 	<script>
+		function hideDiv(arg_div,arg_fun){
+			var div = "#"+arg_div;
+			if (arg_fun == 0)
+			{
+				$(div).slideUp('slow');
+			}
+		}
+		$("#gamemod1").click(function(){
+			$("#gamemodsDiv").fadeOut('slow',function(){
+				lookPlayer();
+			});
+		});
+		function montreDiv(arg_div,arg_fun){
+			var div = "#"+arg_div;
+			if (arg_fun == 0)
+			{
+				$(div).slideDown('slow');
+			}
+		}	
+
+		function changeAppMenu(arg_menu,arg_value){
+			var menu = "data-"+arg_menu;
+			$("#app").attr(menu,arg_value);
+		}
+		function disconnect()
+		{
+			alertify.confirm("Deconnexion","Voulez-vous fermer votre session ?",
+				function(){
+					alertify.success('Decconexion en cours');
+					document.getElementById("disco").click();
+				},
+				function(){
+					alertify.error('Deconnexion Annulée');
+				});
+		}
 		function trimfield(str) 
 		{ 
 			return str.replace(/^\s+|\s+$/g,''); 
@@ -464,7 +668,7 @@ border:none; border-radius:3%; background:#fff;color:#333; box-shadow: 0px 0px 6
 		{
 			$("#tomodachis").hide('slow');
 		}
-		function opponent_found(opp_name,opp_color,p1,p2,wins,loses,draws)
+		function opponent_found(opp_name,opp_color,p1,p2,wins,loses,draws,elo,logo)
 		{
 			$("#navbar").hide();
 			var elmt = $('.gamestarted');
@@ -479,6 +683,8 @@ border:none; border-radius:3%; background:#fff;color:#333; box-shadow: 0px 0px 6
 			$("#win_stat").attr('data-nb',(wins+""));
 			$("#lose_stat").attr('data-nb',(loses+""));
 			$("#draw_stat").attr('data-nb',(draws+""));
+			$("#opp_elo").text(" ELO : "+elo);
+			$("#opp_logo").css("background-image","url("+logo+")");
 			$("#discuss_mess").html("<i class='fa fa-circle' style='color:#00c389;'> Discution "+opp_name+"</i>"); 
 			if (opp_color == 1)
 			{
@@ -490,7 +696,7 @@ border:none; border-radius:3%; background:#fff;color:#333; box-shadow: 0px 0px 6
 				$("#colorSide").text("Noirs");
 				$("#colorSide").attr('style','color:#fff;background:#777;font-weight:bold;font-size:12px;');
 			}
-			on_play = true;
+			on_play = 1;
 			$("#overlay2").fadeOut('slow');
 			$('.aka').hide();
 			});
@@ -503,7 +709,7 @@ border:none; border-radius:3%; background:#fff;color:#333; box-shadow: 0px 0px 6
 		}
 		function ajaxSearch(reset=false)
 		{
-			$('#searchM').slideDown(1000,function(){
+			$('#spasearchM').slideDown(1000,function(){
 			$.ajax({
         url: '/new/',
         data: {
@@ -513,17 +719,19 @@ border:none; border-radius:3%; background:#fff;color:#333; box-shadow: 0px 0px 6
         dataType: 'json',
         success: function (data) {
           if (data.game == 0) {
-						$('#searchM').slideUp(1000,function(){opponent_not_found();});        
+						$('#spasearchM').slideUp(1000,function(){opponent_not_found();});        
 					}
           else
           {
-						if (reset)
+						if (reset || on_play == 2)
 						{
-							chess.load('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1');
+							newGame();
+							//chess.load('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1');
 						}
+						Continue();
 						$("#partie").text("Partie N°"+data.room);
 						initialize_room(data.room);
-						opponent_found(data.opp_name,parseInt(data.role),data.p1,data.p2,data.wins,data.loses,data.draws); 
+						opponent_found(data.opp_name,parseInt(data.role),data.p1,data.p2,data.wins,data.loses,data.draws,data.elo,data.logo); 
 						start_game();   
           }
         }
@@ -535,7 +743,7 @@ border:none; border-radius:3%; background:#fff;color:#333; box-shadow: 0px 0px 6
 		}
 		function lookPlayer()
 		{
-			if (on_play == false)
+			if (on_play%2 == 0)
 			{
 				$("#overlay2").show(1000,function(){
 					ajaxSearch();
@@ -543,6 +751,17 @@ border:none; border-radius:3%; background:#fff;color:#333; box-shadow: 0px 0px 6
 			}
 			else
 			{
+				$("#overlay3").show(1000,function(){});
+			}
+		}
+		function showModes()
+		{
+			if (on_play%2 == 0){
+				montreDiv('gamemodsDiv',0);
+			}
+			else
+			{
+				Continue();
 				$("#overlay3").show(1000,function(){});
 			}
 		}
@@ -558,7 +777,7 @@ border:none; border-radius:3%; background:#fff;color:#333; box-shadow: 0px 0px 6
 					alertify.success('Daccord');
 					$("#overlay3").hide('slow',function(){
 						$("#overlay2").show(1000,function(){
-							ajaxSearch(true);
+							ajaxSearch(0);
 						});
 					});
 				},
@@ -572,7 +791,7 @@ border:none; border-radius:3%; background:#fff;color:#333; box-shadow: 0px 0px 6
 			optionScreen();
 			$("#overlay2").hide(1000);
 		}
-		$("#continue").click(function(){lookPlayer();});
+		$("#continue").click(function(){showModes();});
 		$("#send").click(function(){
 			var messTo = $("#messTO");
 			if (trimfield(messTo.val()) != ''){

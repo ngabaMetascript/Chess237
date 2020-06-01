@@ -12,8 +12,6 @@ body {
   font-weight: 400;
 }
 
-
-
 button { 
   font-family: Candara,Ubuntu,Calibri,sans-serif;
   font-weight: 400;
@@ -296,16 +294,17 @@ tbody span { line-height: 4.5em; padding-right: 0.3em; }
 }
 
 /*
-.valid:before,
-.valid:after,
-.current:before,
-.current:after,
-.castle:before,
-.castle:after,
-.valid.highlight:before,
-.valid.highlight:after,
-.current.highlight:before,
-.current.highlight:after {
+
+#app[data-moves='on'] .valid:before,
+#app[data-moves='on'] .valid:after,
+#app[data-moves='on'] .current:before,
+#app[data-moves='on'] .current:after,
+#app[data-moves='on'] .castle:before,
+#app[data-moves='on'] .castle:after,
+#app[data-moves='on'] .valid.highlight:before,
+#app[data-moves='on'] .valid.highlight:after,
+#app[data-moves='on'] .current.highlight:before,
+#app[data-moves='on'] .current.highlight:after {
   content: '';
   z-index: 1;
   position: absolute;
@@ -1063,11 +1062,6 @@ input[type=checkbox]:hover + label:after {
   background-image: url(../img/ajax-loader.gif);
   background-position: 50% 60%;
   background-repeat: no-repeat;
-}
-
-#app[data-menu="about"] #overlay {
-  z-index: 99;
-  opacity: .75;
 }
 
 #app[data-state="game"] #overlay {

@@ -3,6 +3,7 @@ from . import views
 app_name = 'chess'
 urlpatterns = [
    path('',views.index,name = 'index'),
+   path('disc/',views.disc,name= 'disc'),
    path('check/',views.check,name = 'check'),
    path('log/',views.log,name = 'log'),
    path('new/',views.new,name = 'new'),

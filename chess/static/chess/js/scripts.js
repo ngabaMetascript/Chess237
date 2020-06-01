@@ -1,9 +1,34 @@
 var Player = 0;
-var name1 = "Ngaba";
-var name2 = "Hiro";
-turns = ['w','b'];
-function updateViewPlayer()
+var names = ["",""];
+var room_id = 0;
+var last_played = "";
+var on_play = 0;
+var turns = ['w','b'];
+var turn_token = null;
+var message_token = null;
+var game_token = null;
+
+function index_turn(turn)
 {
+	result = 0;
+	if (turn == 'b')
+	{
+		result = 1;
+	}
+	return result;
+}
+
+function initialize_room(room)
+{
+	room_id = room;
+}
+
+function updateViewPlayer(play="")
+{
+	if (play != "")
+	{
+		Player = play;
+	}
 	if (Player == 1)
 	{
 		updateView(0,180);
@@ -38,7 +63,8 @@ function grabPiece(a) {
 		!mouseDown && controls && (a.preventDefault(), mouseDown = !0, grabbed = this, grabbedID = grabbed.id.substr(-2), startX = a.pageX - document.body.offsetWidth / 2, startY = a.pageY - document.body.offsetHeight / 2, style = window.getComputedStyle(grabbed), matrix = style.getPropertyValue("-webkit-transform"), matrixParts = matrix.split(","), grabbedW = parseInt(style.getPropertyValue("width")) / 2, grabbedX = parseInt(matrixParts[4]), grabbedY = parseInt(matrixParts[5]), grabbed.classList.add("grabbed"), showMoves(grabbedID), highLight(grabbed, square))
 	}
 	else{
-		alert("ce n'est pas votre tour de jouer");
+		var message = "C'est au tour de "+names[index_turn(chess.turn())]+" de jouer";
+		alertify.warning(message);
 	}
 }
 
@@ -79,19 +105,26 @@ function moveScene(a) {
 }
 
 function showMoves(a) {
+	console.log(a);
     var b = chess.moves({
         target: a,
         verbose: !0
     });
-	
     for (var c = 0; c < b.length; c++) {
         var d = b[c],
             e = d.from,
             f = d.to,
             g = d.captured;
-        document.getElementById(e).classList.add("current"), document.getElementById(f).classList.add("valid"), g && document.getElementById(f).classList.add("captured")
+		ee = document.getElementById(e);
+		ff = document.getElementById(f);
+		if (ff != null){
+			ee.classList.add("current"), ff.classList.add("valid"), g && ff.classList.add("captured")
+		}
+		else{
+				ee.classList.add("current");
+				alertify.error("Mouvement invalide");
+			}
     }
-	
 }
 
 function hideMoves(a) {
@@ -102,9 +135,16 @@ function hideMoves(a) {
     for (var c = 0; c < b.length; c++) {
         var d = b[c],
             e = d.from,
-            f = d.to;
-        document.getElementById(e).classList.remove("current"), document.getElementById(f).classList.remove("valid"), document.getElementById(f).classList.remove("captured")
-    }
+            f = d.to
+		ee = document.getElementById(e);
+		ff = document.getElementById(f);
+		if (ff != null){
+			ee.classList.remove("current"), ff.classList.remove("valid"), ff.classList.remove("captured")
+		}
+		else{
+			ee.classList.add("current");
+		}
+	}
 }
 
 function createPiece(a, b, c) {
@@ -112,10 +152,10 @@ function createPiece(a, b, c) {
     d.addEventListener(press, grabPiece, !1), d.setAttribute("id", a + b + c), a === "w" ? d.classList.add("white") : d.classList.add("black"), document.getElementById(c).appendChild(d)
 }
 
-function updateBoard(e1="",e2="") {
+function updateBoard(e1="",e2="",play="") {
     if (e1 != "")
     {
-       name1 = e1;
+       names[0] = e1;
     }
     function m(a) {
         document.getElementById("log").innerHTML = a
@@ -145,7 +185,7 @@ function updateBoard(e1="",e2="") {
         }
     }
     var l = chess.fen();
-    currentColor = chess.turn(), l !== "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1" ? document.getElementById("undo").dataset.state = "active" : document.getElementById("undo").dataset.state = "inactive", currentColor === "w" ? (updateViewPlayer(), m("Tours des Blancs ("+name1+")"), b && m("Blancs, votre roi est en echec!"), c && m("Blancs, vous etes echec et mat. les Noirs gagnent")) : (updateViewPlayer(), m("Tours des Noirs ("+name2+")"), b && m("Noirs, votre roi est en echec"), c && m("Noirs, vous etes echec et mat. les Blancs gagnent"))
+    currentColor = chess.turn(), l !== "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1" ? document.getElementById("undo").dataset.state = "active" : document.getElementById("undo").dataset.state = "inactive", currentColor === "w" ? (updateViewPlayer(play), m("Tours des Blancs ("+names[0]+")"), b && m("Blancs, votre roi est en echec!"), c && m("Blancs, vous etes echec et mat. les Noirs gagnent")) : (updateViewPlayer(play), m("Tours des Noirs ("+names[1]+")"), b && m("Noirs, votre roi est en echec"), c && m("Noirs, vous etes echec et mat. les Blancs gagnent"))
 }
 
 function updateCaptured() {
@@ -252,7 +292,7 @@ function UI() {
         b = document.getElementsByClassName("set-theme");
     for (var c = 0; c < a.length; c++) a[c].addEventListener(press, setState, !1);
     for (var c = 0; c < b.length; c++) b[c].addEventListener(press, setTheme, !1);
-    document.getElementById("continue").addEventListener(press, Continue, !1), document.getElementById("open-menu").addEventListener(press, optionScreen, !1), document.getElementById("undo").addEventListener(press, undoMove, !1)
+    document.getElementById("open-menu").addEventListener(press, optionScreen, !1), document.getElementById("undo").addEventListener(press, undoMove, !1)
 }
 
 function init() {
@@ -4147,7 +4187,8 @@ Line.prototype = {
     }
     for (g = 0; g < e; g++) point = c ? "m" + (Math.floor(g / 4) + 1) + (g % 4 + 1) : String.fromCharCode(g + 97), this[point] = f[g]
 }, FirminCSSMatrix.prototype.toString = function() {
-    var a = this,b, c;
+    var a = this,
+        b, c;
     return this.isAffine() ? (c = "matrix(", b = ["a", "b", "c", "d", "e", "f"]) : (c = "matrix3d(", b = ["m11", "m12", "m13", "m14", "m21", "m22", "m23", "m24", "m31", "m32", "m33", "m34", "m41", "m42", "m43", "m44"]), c + b.map(function(b) {
         return 0
     }).join(", ") + ")"
@@ -4549,7 +4590,8 @@ var Chess = function(a) {
     }
 
     function ba() {
-        return _() && X().length == 0
+				var test = _() && X().length == 0;
+        return test;
     }
 
     function bb() {
@@ -4953,7 +4995,8 @@ var Chess = function(a) {
             return _()
         },
         in_checkmate: function() {
-            return ba()
+						var result = ba();
+            return result;
         },
         in_stalemate: function() {
             return bb()
@@ -5080,11 +5123,36 @@ var Chess = function(a) {
                     }
             if (!b) return null;
             var f = bo(b);
+						var last_played=f.from+"-"+f.to;
+						if (turns[Player] == chess.turn())
+						{
+							var tmp_name = names[Player];
+							var xhr = new XMLHttpRequest();
+							xhr.open('GET', "/save_move/"+room_id+"/"+last_played+"/"+(1-Player)+"/");
+							xhr.onreadystatechange = function() {
+							if (xhr.readyState == 4 && xhr.status == 200) 
+							{}
+							};
+							xhr.send();
+						}
+						else
+						{
+							var tmp_name = names[1-Player];
+						}
+						document.getElementById('recents').innerHTML = "<div style='font-size:16px;margin-bottom:5px;'>"+tmp_name+" : "+f.san+"</div>"+document.getElementById('recents').innerHTML;
             return bf(b), f
         },
         undo: function() {
+						alertify.warning("Nous démandons à "+names[1-Player]+", s'il accepte que vous annuliez.");
+						var cancel = false;
+						if (cancel == false){
+							alertify.error("Désolé: Il a refusé.");
+							return null;
+						}
+						else {
             var a = bg();
-            return a ? bo(a) : null
+            return a ? bo(a) : null;
+						}
         },
         clear: function() {
             return N()
@@ -5122,6 +5190,114 @@ var Chess = function(a) {
     }
 };
 typeof exports != "undefined" && (exports.Chess = Chess);
+
+function update_win(winner)
+{
+	var xhr = new XMLHttpRequest();
+	xhr.open('GET',"/update_stats/1/"+room_id+"/"+winner+"/");
+	xhr.send();
+}
+
+function update_draws()
+{
+	var xhr = new XMLHttpRequest();
+	xhr.open('GET',"/update_stats/2/"+room_id+"/");
+	xhr.send();
+}
+
+function start_game()
+{
+	var show_game_over = true;
+	game_token = setInterval(function(){	
+		if (chess.game_over()){
+			clearInterval(game_token);
+			clearInterval(message_token);
+			clearInterval(turn_token);
+			if (show_game_over)
+			{
+				if (chess.in_checkmate())
+				{
+					turn = chess.turn();
+					if (turns[Player] == turn)
+					{
+						alertify.error("Dommage! vous avez perdu");
+						var lose_stat = document.getElementById("lose_stat");		
+						lose_stat.textContent = (parseInt(lose_stat.getAttribute('data-nb'))+1) + " Defaites";
+						update_win(turns[1-Player]);
+					}			
+					else
+					{
+						alertify.success("Bravo! vous avez gagné");
+						var win_stat = document.getElementById("win_stat");		
+						win_stat.textContent = (parseInt(win_stat.getAttribute('data-nb'))+1) + " Victoires";	
+						update_win(turns[Player]);
+					}
+				}
+				else
+				{
+						alertify.warning("Match nul !");
+						var draw_stat = document.getElementById("draw_stat");		
+						draw_stat.textContent = (parseInt(draw_stat.getAttribute('data-nb'))+1) + " Matchs nul ";	
+						update_draws();
+				}
+			}
+			show_game_over = false; 
+			on_play = 2;
+		}
+	},1000);
+
+	turn_token = setInterval(function(){
+		if (turns[Player] != chess.turn())
+		{
+			var xhr = new XMLHttpRequest();
+			xhr.open('GET',"/check_turn/"+room_id+"/");		
+			xhr.onreadystatechange = function()
+			{
+				if (xhr.readyState == 4 && xhr.status == 200) 
+				{ 
+					var json = JSON.parse(xhr.responseText);
+					if (json.turn == Player){
+						j_start = json.move.split('-')[0];
+						j_end = json.move.split('-')[1];
+						chess.move({from:j_start,to:j_end});
+						updateBoard();
+					}	
+				}
+			};
+			xhr.send();			
+		}
+	},1500);
+
+	message_token = setInterval(function(){
+			var xhr = new XMLHttpRequest();
+			xhr.open('GET',"/check_response/"+room_id+"/"+Player+"/");	
+			xhr.onreadystatechange = function()
+			{
+				if (xhr.readyState == 4 && xhr.status == 200) 
+				{ 
+					var json = JSON.parse(xhr.responseText);
+					if (json.send == (1-Player)){
+						for (var m=0; m<parseInt(json.nb_msg); m++)
+						{
+							updateChat(json[("msg"+m)]);
+							alertify.warning('Nouveau message.');
+						}
+					}	
+				}
+			};
+			xhr.send();	
+		},3000);
+}
+
+function giveUp()
+{
+
+}
+
+function endGame()
+{
+
+}
 var chess = new Chess,
     currentColor = chess.turn(),
     turn = 0,

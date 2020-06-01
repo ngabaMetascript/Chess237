@@ -2,7 +2,7 @@ var Player = 0;
 var names = ["",""];
 var room_id = 0;
 var last_played = "";
-var on_play = false;
+var on_play = 0;
 var turns = ['w','b'];
 var turn_token = null;
 var message_token = null;
@@ -292,7 +292,7 @@ function UI() {
         b = document.getElementsByClassName("set-theme");
     for (var c = 0; c < a.length; c++) a[c].addEventListener(press, setState, !1);
     for (var c = 0; c < b.length; c++) b[c].addEventListener(press, setTheme, !1);
-    document.getElementById("continue").addEventListener(press, Continue, !1), document.getElementById("open-menu").addEventListener(press, optionScreen, !1), document.getElementById("undo").addEventListener(press, undoMove, !1)
+    document.getElementById("open-menu").addEventListener(press, optionScreen, !1), document.getElementById("undo").addEventListener(press, undoMove, !1)
 }
 
 function init() {
@@ -5207,9 +5207,12 @@ function update_draws()
 
 function start_game()
 {
+	var show_game_over = true;
 	game_token = setInterval(function(){	
 		if (chess.game_over()){
-			var show_game_over = true;
+			clearInterval(game_token);
+			clearInterval(message_token);
+			clearInterval(turn_token);
 			if (show_game_over)
 			{
 				if (chess.in_checkmate())
@@ -5237,8 +5240,9 @@ function start_game()
 						draw_stat.textContent = (parseInt(draw_stat.getAttribute('data-nb'))+1) + " Matchs nul ";	
 						update_draws();
 				}
-				show_game_over = false; 
 			}
+			show_game_over = false; 
+			on_play = 2;
 		}
 	},1000);
 
